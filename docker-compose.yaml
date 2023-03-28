@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - "./loki-local-config.yaml:/mnt/config/loki-config.yaml"
