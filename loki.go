@@ -11,6 +11,10 @@ import (
 	"net/url"
 )
 
+func init() {
+	caddy.RegisterModule(LokiLogger{})
+}
+
 type LokiLogger struct {
 	endpoint string
 	labels   map[string]interface{}
