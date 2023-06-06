@@ -8,7 +8,7 @@ import (
 
 func TestStringer(t *testing.T) {
 	l := LokiLogger{
-		endpoint: "https://foo:bar@example.com",
+		Endpoint: "https://foo:bar@example.com",
 	}
 
 	if strings.Contains(l.String(), "bar") {
@@ -31,7 +31,7 @@ func TestWriterKeyWithDifferentEndpoints(t *testing.T) {
 
 	for _, endpoint := range tests {
 
-		logger.endpoint = endpoint
+		logger.Endpoint = endpoint
 		key := logger.WriterKey()
 
 		if slices.Contains(prev, key) {
@@ -58,14 +58,14 @@ func TestWriterKeyWithDifferentLabels(t *testing.T) {
 	var prev []string
 
 	logger := LokiLogger{
-		endpoint: "https://test.example.com",
+		Endpoint: "https://test.example.com",
 	}
 
 	for _, labels := range tests {
 
 		key := logger.WriterKey()
 
-		logger.labels = labels
+		logger.Labels = labels
 
 		if slices.Contains(prev, key) {
 			idx := slices.Index(prev, key)

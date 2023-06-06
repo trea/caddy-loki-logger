@@ -1,6 +1,7 @@
 package loki
 
 import (
+	"context"
 	"fmt"
 	"github.com/trea/loki-sink-for-zap"
 	"go.uber.org/zap"
@@ -8,14 +9,17 @@ import (
 )
 
 func NewLokiWriter(endpoint string, labels map[string]interface{}, logger *zap.Logger) *LokiWriter {
-	rs := &loki_sink_for_zap.LokiWriteSyncer{
-		Tags: labels,
-		Url:  endpoint,
-	}
+	ctx, cancel := context.WithCancel(context.Background())
+
+	ws := loki_sink_for_zap.NewLokiWriteSyncer(ctx)
+	ws.Url = endpoint
+	ws.Tags = labels
+
+	defer cancel()
 
 	return &LokiWriter{
-		rs,
-		logger,
+		rs:     ws,
+		logger: logger,
 	}
 }
 

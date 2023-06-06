@@ -32,7 +32,7 @@ func TestEmptyEndpointUrl(t *testing.T) {
 
 func TestInvalidEndpointPlaceholders(t *testing.T) {
 	l := LokiLogger{}
-	l.endpoint = "{vars.nonExistentUrl}"
+	l.Endpoint = "{vars.nonExistentUrl}"
 	replacer := caddy.NewReplacer()
 	base := context.WithValue(context.Background(), caddy.ReplacerCtxKey, replacer)
 	ctx, cancel := caddy.NewContext(caddy.Context{Context: base})
@@ -60,7 +60,7 @@ func TestGoodEndpointPlaceholder(t *testing.T) {
 	})
 
 	l := LokiLogger{}
-	l.endpoint = "{env.LOKI_ENDPOINT}"
+	l.Endpoint = "{env.LOKI_ENDPOINT}"
 
 	replacer := caddy.NewReplacer()
 	base := context.WithValue(context.Background(), caddy.ReplacerCtxKey, replacer)
@@ -80,8 +80,8 @@ func TestGoodEndpointPlaceholder(t *testing.T) {
 
 func TestLabelPlaceholders(t *testing.T) {
 	l := LokiLogger{
-		endpoint: "https://example.com",
-		labels: map[string]interface{}{
+		Endpoint: "https://example.com",
+		Labels: map[string]interface{}{
 			"app_env":        "{env.APP_ENV}",
 			"varplaceholder": "{somevar}",
 		},

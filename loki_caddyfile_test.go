@@ -42,7 +42,7 @@ loki
 		t.Error("Unmarshal passed, should have failed because of no endpoint set")
 	}
 
-	testNoLabelsSet(t, l.labels)
+	testNoLabelsSet(t, l.Labels)
 }
 
 func TestUnmarshalBasicCaddyfile(t *testing.T) {
@@ -57,8 +57,8 @@ func TestUnmarshalBasicCaddyfile(t *testing.T) {
 		t.Errorf("Unmarshal failed, should have passed: %+v", err)
 	}
 
-	testEndpoint(t, l.endpoint, endpoint)
-	testNoLabelsSet(t, l.labels)
+	testEndpoint(t, l.Endpoint, endpoint)
+	testNoLabelsSet(t, l.Labels)
 }
 
 func TestUnmarshalReplacedEnpoint(t *testing.T) {
@@ -72,8 +72,8 @@ func TestUnmarshalReplacedEnpoint(t *testing.T) {
 		t.Errorf("Unmarshal failed, should have passed: %+v", err)
 	}
 
-	testEndpoint(t, l.endpoint, endpoint)
-	testNoLabelsSet(t, l.labels)
+	testEndpoint(t, l.Endpoint, endpoint)
+	testNoLabelsSet(t, l.Labels)
 }
 
 func TestUnmarshalCaddyfileWithStaticLabel(t *testing.T) {
@@ -88,7 +88,7 @@ func TestUnmarshalCaddyfileWithStaticLabel(t *testing.T) {
 		t.Errorf("Unmarshal failed, should have passed: %+v", err)
 	}
 
-	testEndpoint(t, l.endpoint, endpoint)
+	testEndpoint(t, l.Endpoint, endpoint)
 }
 
 func TestUnmarshalCaddyfileWithNestedLabels(t *testing.T) {
@@ -111,11 +111,11 @@ func TestUnmarshalCaddyfileWithNestedLabels(t *testing.T) {
 		t.Errorf("Unmarshal failed, should have passed: %+v", err)
 	}
 
-	testEndpoint(t, l.endpoint, endpoint)
+	testEndpoint(t, l.Endpoint, endpoint)
 
-	testLabel(t, l.labels, "somelabel", "example")
-	testLabel(t, l.labels, "anotherlabel", 1)
-	testLabel(t, l.labels, "testing", true)
-	testLabel(t, l.labels, "anEnvVar", "{env.SOMEENV}")
-	testLabel(t, l.labels, "aVar", "{vars.somevar}")
+	testLabel(t, l.Labels, "somelabel", "example")
+	testLabel(t, l.Labels, "anotherlabel", 1)
+	testLabel(t, l.Labels, "testing", true)
+	testLabel(t, l.Labels, "anEnvVar", "{env.SOMEENV}")
+	testLabel(t, l.Labels, "aVar", "{vars.somevar}")
 }

@@ -16,17 +16,17 @@ func init() {
 }
 
 type LokiLogger struct {
-	endpoint string
-	labels   map[string]interface{}
-	repl     *caddy.Replacer
-	logger   *zap.Logger
+	Endpoint string
+	Labels   map[string]interface{}
+	Repl     *caddy.Replacer
+	Logger   *zap.Logger
 }
 
 func (l LokiLogger) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID: "caddy.logging.writers.loki",
 		New: func() caddy.Module {
-			return LokiLogger{}
+			return new(LokiLogger)
 		},
 	}
 }
@@ -39,8 +39,8 @@ var (
 )
 
 func (l *LokiLogger) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	if l.labels == nil {
-		l.labels = make(map[string]interface{})
+	if l.Labels == nil {
+		l.Labels = make(map[string]interface{})
 	}
 
 	for d.Next() {
@@ -49,7 +49,7 @@ func (l *LokiLogger) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			return d.ArgErr()
 		}
 
-		l.endpoint = d.Val()
+		l.Endpoint = d.Val()
 
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 
@@ -59,7 +59,7 @@ func (l *LokiLogger) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 					label := args[0]
 					value := args[1]
 
-					l.labels[label] = value
+					l.Labels[label] = value
 
 					continue
 				}
@@ -71,7 +71,7 @@ func (l *LokiLogger) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 						return d.ArgErr()
 					}
 
-					l.labels[label] = d.ScalarVal()
+					l.Labels[label] = d.ScalarVal()
 				}
 			}
 		}
@@ -81,29 +81,29 @@ func (l *LokiLogger) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 }
 
 func (l LokiLogger) String() string {
-	u, _ := url.Parse(l.endpoint)
+	u, _ := url.Parse(l.Endpoint)
 
 	return u.Redacted()
 }
 
 func (l LokiLogger) WriterKey() string {
 	h := md5.New()
-	io.WriteString(h, l.endpoint)
-	io.WriteString(h, fmt.Sprintf("%s", l.labels))
+	io.WriteString(h, l.Endpoint)
+	io.WriteString(h, fmt.Sprintf("%s", l.Labels))
 
 	return fmt.Sprintf("loki:%x", h.Sum(nil))
 }
 
-func (l LokiLogger) OpenWriter() (io.WriteCloser, error) {
-	return NewLokiWriter(l.endpoint, l.labels, l.logger), nil
+func (l *LokiLogger) OpenWriter() (io.WriteCloser, error) {
+	return NewLokiWriter(l.Endpoint, l.Labels, l.Logger), nil
 }
 
-func (l LokiLogger) Validate() error {
-	if l.endpoint == "" {
+func (l *LokiLogger) Validate() error {
+	if l.Endpoint == "" {
 		return ErrEmptyEndpoint
 	}
 
-	replacedUrl, err := l.repl.ReplaceOrErr(l.endpoint, true, true)
+	replacedUrl, err := l.Repl.ReplaceOrErr(l.Endpoint, true, true)
 
 	if err != nil {
 		return errors.Join(ErrInvalidEndpointPlaceholders, err)
@@ -113,14 +113,14 @@ func (l LokiLogger) Validate() error {
 		return errors.Join(ErrInvalidEndpointUrl, err)
 	}
 
-	for _, v := range l.labels {
+	for _, v := range l.Labels {
 		vStr, ok := v.(string)
 
 		if !ok {
 			continue
 		}
 
-		_, err := l.repl.ReplaceOrErr(vStr, false, true)
+		_, err := l.Repl.ReplaceOrErr(vStr, false, true)
 
 		if err != nil {
 			return errors.Join(ErrInvalidLabelValReplacement, err)
@@ -131,8 +131,15 @@ func (l LokiLogger) Validate() error {
 }
 
 func (l *LokiLogger) Provision(context caddy.Context) error {
-	l.repl = context.Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
-	l.logger = context.Logger(l)
+	repl, ok := context.Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
+
+	if !ok {
+		//return fmt.Errorf("unable to get caddy replacer")
+		repl = caddy.NewReplacer()
+	}
+
+	l.Repl = repl
+	l.Logger = context.Logger(l)
 	return nil
 }
 
