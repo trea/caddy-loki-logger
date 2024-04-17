@@ -61,7 +61,7 @@ output loki <loki_endpoint>
 ```
 {
     log default {
-        output loki {env.LOKI_SERVER}
+        output loki {$LOKI_SERVER}
     }
 }
 ```
@@ -72,7 +72,9 @@ Sends log output to a Loki server whose address is set as `LOKI_SERVER` in the e
 {
     log default {
         output loki https://myuser:password@loki.example.com {
-           REGION iad  
+            label {
+                REGION iad
+            }
         }
     }
 }
