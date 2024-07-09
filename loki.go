@@ -134,7 +134,6 @@ func (l *LokiLogger) Provision(context caddy.Context) error {
 	repl, ok := context.Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
 
 	if !ok {
-		//return fmt.Errorf("unable to get caddy replacer")
 		repl = caddy.NewReplacer()
 	}
 

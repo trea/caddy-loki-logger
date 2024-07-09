@@ -6,6 +6,7 @@ import (
 	"github.com/trea/loki-sink-for-zap"
 	"go.uber.org/zap"
 	"io"
+	"log"
 )
 
 func NewLokiWriter(endpoint string, labels map[string]interface{}, logger *zap.Logger) *LokiWriter {
@@ -36,7 +37,7 @@ func (l LokiWriter) Write(p []byte) (n int, err error) {
 	}
 
 	if err := l.rs.Sync(); err != nil {
-		l.logger.Warn(fmt.Sprintf("Writing log entry to Loki failed: %+v", err))
+		log.Printf(fmt.Sprintf("Writing log entry to Loki failed: %+v", err))
 	}
 
 	return written, nil
